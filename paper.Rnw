@@ -77,12 +77,17 @@ Likewise, we can also verify the homogeneity assumption, that $\epsilon_{ijk}
 \ref{fig:homogeneity} that the $p$ value of the Bartlett Test is 0.1716, which
 means that the variances are likely to be homogeneous (the same).
 
-Using a simple fixed effect RCBD ANOVA, we can see that the size factor
+\section{Results}
+
+Using a simple fixed effect ANOVA, we can see that the size factor
 $SS_{size}$ has a statistically significant effect on time. Surprisingly, the
 distance factor $SS_{distance}$ does not have a significant effect on time,
 despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 
-\section{Results}
+From Figure \ref{fig:bysize}, we can see that there is some difference between each
+size's mean. However in Figure \ref{fig:bydistance}, we can see that the total times
+by distance are fairly close in means and there is much overlap between each distance's
+IQR.
 
 \section{Conclusions}
 
@@ -124,6 +129,23 @@ despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 @
 \caption{Testing homogeneity of variance of each factor}
 \label{fig:homogeneity}
+\end{figure}
+
+
+\begin{figure}[p]
+<<fig=TRUE,echo=FALSE,width=8,height=4>>=
+  boxplot(time ~ size, data = fitts)
+@
+\caption{Times by Size}
+\label{fig:bysize}
+\end{figure}
+
+\begin{figure}[p]
+<<fig=TRUE,echo=FALSE,width=8,height=4>>=
+  boxplot(time ~ distance, data = fitts)
+@
+\caption{Times by Distance}
+\label{fig:bysize}
 \end{figure}
 
 \begin{figure}[p]
