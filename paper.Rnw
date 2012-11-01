@@ -1,0 +1,137 @@
+\documentclass{article}
+
+\usepackage[noae]{Sweave}
+
+\title{Examinig Fitt's Law}
+\author{Brian To}
+\date{Fall 2012}
+
+\begin{document}
+  \maketitle
+  
+<<echo=FALSE>>=
+library(plyr)
+library(lmtest)
+
+if (!exists('fitts')) { # Lazily fetch data
+  fitts <- read.csv('http://fitts-law-experiment.herokuapp.com/data.csv')
+}
+
+# Clean tablet data
+fitts <- subset(fitts, pointer != 'tablet')
+
+# Get only the normal data
+fitts.normal <- ddply(fitts, .(subject), .fun = function(df) {
+  normal <- shapiro.test(df$time)
+  
+  if (normal$p.value < 0.05) {
+    return(NULL)
+  }
+  
+  return(df)
+})
+
+fitts.resid <- resid(lm(fitts$time ~ as.numeric(row.names(fitts))))
+fitts.lm <- lm(time ~ size * distance, fitts)
+@
+
+\section{Introduction}
+
+\section{Data Collection}
+
+\section{Experiment Design}
+
+\section{Experiment Analysis}
+
+An initial model for this relation is
+
+\[ Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk} \]
+
+where $\alpha$ represents the effect of size, $\beta$ represents the effect of
+distance, and $\epsilon$ represents the error in the model. $\alpha$ and $\beta$
+are both fixed effects. The assumptions for this model are that:
+
+\begin{itemize}
+  \item entries are independent
+  \item $Y \sim N(0, \sigma^2)$
+  \item $\epsilon_{ijk} \sim N(0, \sigma^2_\epsilon)$
+  \item $\sum \alpha_i = 0$
+  \item $\sum \beta_j = 0$
+\end{itemize}
+
+To verify the independence assumption, we can plot the time data residuals
+$Y_{ijk} - \bar Y$ against the order of the data. Using this method, we
+can see that the residuals do not exhibit any pattern. See Figure \ref{fig:residuals}.
+Likewise, a Durbin-Watson autocorrelation test against the data order results in
+a $p$ value of 0.3103, which means the residuals have no significant
+autocorrelation. See Figure \ref{fig:independence}.
+
+Another requirement for this ANOVA analysis is the normality assumption that
+states $Y \sim N(0, \sigma^2)$. We may qualify the data's normality with a
+Shapiro-Wilk normality test. See Figure \ref{fig:normality}. The Shapiro-Wilk normality
+test has a $p$ value of 0.2964, which means that the data is likely to be
+normal.
+
+Likewise, we can also verify the homogeneity assumption, that $\epsilon_{ijk}
+\sim N(0, \sigma^2_\epsilon)$ with a Bartlett Test. We can see from Figure
+\ref{fig:homogeneity} that the $p$ value of the Bartlett Test is 0.1716, which
+means that the variances are likely to be homogeneous (the same).
+
+Using a simple fixed effect RCBD ANOVA, we can see that the size factor
+$SS_{size}$ has a statistically significant effect on time. Surprisingly, the
+distance factor $SS_{distance}$ does not have a significant effect on time,
+despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
+
+\section{Results}
+
+\section{Conclusions}
+
+\section{References} % TODO Make into bibliography
+
+\section{Figures}
+
+\begin{figure}[p]
+<<fig=TRUE,echo=FALSE,width=8,height=4>>=
+  plot(fitts.resid,
+       main="",
+       xlab="",
+       ylab="")
+@
+\caption{Time factor residuals}
+\label{fig:residuals}
+\end{figure}
+
+
+\begin{figure}[p]
+<<echo=FALSE>>=
+  dwtest(fitts$time ~ as.numeric(row.names(fitts)))
+@
+\caption{Testing independence of $Y_{ijk}$ via autocorrelation}
+\label{fig:independence}
+\end{figure}
+
+\begin{figure}[p]
+<<echo=FALSE>>=
+  shapiro.test(fitts$time)
+@
+\caption{Testing normality of $Y_{ijk}$}
+\label{fig:normality}
+\end{figure}
+
+\begin{figure}[p]
+<<echo=FALSE>>=
+  bartlett.test(time ~ size * distance, data = fitts)
+@
+\caption{}
+\label{fig:homogeneity}
+\end{figure}
+
+\begin{figure}[p]
+<<echo=FALSE>>=
+  anova(fitts.lm)
+@
+\caption{}
+\label{fig:anova}
+\end{figure}
+
+\end{document}
