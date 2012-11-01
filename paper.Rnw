@@ -21,7 +21,7 @@ if (!exists('fitts')) { # Lazily fetch data
 fitts <- subset(fitts, pointer != 'tablet')
 
 # Get only the normal data
-fitts.normal <- ddply(fitts, .(subject), .fun = function(df) {
+fitts <- ddply(fitts, .(subject), .fun = function(df) {
   normal <- shapiro.test(df$time)
   
   if (normal$p.value < 0.05) {
@@ -93,9 +93,9 @@ despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 \begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
   plot(fitts.resid,
-       main="",
-       xlab="",
-       ylab="")
+       main="Time residuals",
+       xlab="Index",
+       ylab="Residual")
 @
 \caption{Time factor residuals}
 \label{fig:residuals}
@@ -122,7 +122,7 @@ despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 <<echo=FALSE>>=
   bartlett.test(time ~ size * distance, data = fitts)
 @
-\caption{}
+\caption{Testing homogeneity of variance of each factor}
 \label{fig:homogeneity}
 \end{figure}
 
@@ -130,7 +130,7 @@ despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 <<echo=FALSE>>=
   anova(fitts.lm)
 @
-\caption{}
+\caption{ANOVA Table for $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$.}
 \label{fig:anova}
 \end{figure}
 
