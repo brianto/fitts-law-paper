@@ -35,6 +35,8 @@ fitts <- ddply(fitts, .(subject), .fun = function(df) {
 
 fitts.resid <- resid(lm(fitts$time ~ as.numeric(row.names(fitts))))
 fitts.lm <- lm(time ~ size * distance, fitts)
+
+values <- list()
 @
 
 \section{Introduction}
@@ -64,9 +66,9 @@ contribute to the time it takes for a user to reach (click on) a target.
 \section{Data Collection}
 
 To examine Fitt's Law, I created a web application similar to a Java applet
-created by researchers at UC Berkley\cite{applet}. The web app may be found at
-\url{http://fitts-law-experiment.herokuapp.com} and the source code may be
-found at \url{http://github.com/brianto/fitts-law-experiment}.
+created by researchers at UC Berkley\cite{applet}\cite{goldberg}. The web app
+may be found at \url{http://fitts-law-experiment.herokuapp.com} and the source
+code may be found at \url{http://github.com/brianto/fitts-law-experiment}.
 
 The subject is presented a round target placed randomly in one of four possible
 locations on the screen. The locations are at the four corners of an imaginary
@@ -129,42 +131,6 @@ are both fixed effects. The assumptions for this model are that:
   \item $\sum \beta_j = 0$
 \end{itemize}
 
-To verify the independence assumption, we can plot the time data residuals
-$Y_{ijk} - \bar Y$ against the order of the data. Using this method, we
-can see that the residuals do not exhibit any pattern. See Figure \ref{fig:residuals}.
-Likewise, a Durbin-Watson auto-correlation test against the data order results in
-a $p$ value of 0.3103, which means the residuals have no significant
-auto correlation. See Figure \ref{fig:independence}.
-
-Another requirement for this ANOVA analysis is the normality assumption that
-states $Y \sim N(0, \sigma^2)$. We may qualify the data's normality with a
-Shapiro-Wilk normality test. See Figure \ref{fig:normality}. The Shapiro-Wilk normality
-test has a $p$ value of 0.2964, which means that the data is likely to be
-normal.
-
-Likewise, we can also verify the homogeneity assumption, that $\epsilon_{ijk}
-\sim N(0, \sigma^2_\epsilon)$ with a Bartlett Test. We can see from Figure
-\ref{fig:homogeneity} that the $p$ value of the Bartlett Test is 0.1716, which
-means that the variances are likely to be homogeneous (the same).
-
-\section{Results}
-
-Using a simple fixed effect ANOVA, we can see that the size factor
-$SS_{size}$ has a statistically significant effect on time. Surprisingly, the
-distance factor $SS_{distance}$ does not have a significant effect on time,
-despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
-
-From Figure \ref{fig:bysize}, we can see that there is some difference between each
-size's mean. However in Figure \ref{fig:bydistance}, we can see that the total times
-by distance are fairly close in means and there is much overlap between each distance's
-IQR.
-
-\section{Conclusions}
-
-\section{References} % TODO Make into bibliography
-
-\section{Figures}
-
 \begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
   plot(fitts.resid,
@@ -176,31 +142,70 @@ IQR.
 \label{fig:residuals}
 \end{figure}
 
-
 \begin{figure}[p]
 <<echo=FALSE>>=
-  dwtest(fitts$time ~ as.numeric(row.names(fitts)))
+  fitts.independence <- dwtest(fitts$time ~ as.numeric(row.names(fitts)))
+  fitts.independence
+  values[['independence']] <- round(fitts.independence$p.value, digits = 2)
 @
 \caption{Testing independence of $Y_{ijk}$ via auto correlation}
 \label{fig:independence}
 \end{figure}
 
+To verify the independence assumption, we can plot the time data residuals
+$Y_{ijk} - \bar Y$ against the order of the data. Using this method, we
+can see that the residuals do not exhibit any pattern. See Figure
+\ref{fig:residuals}. Likewise, a Durbin-Watson auto-correlation test against
+the data order results in a $p$ value of \Sexpr{values[['independence']]},
+which means the residuals have no significant auto correlation. See Figure
+\ref{fig:independence}.
+
 \begin{figure}[p]
 <<echo=FALSE>>=
-  shapiro.test(fitts$time)
+  fitts.normality <- shapiro.test(fitts$time)
+  fitts.normality
+  values[['normality']] <- round(fitts.normality$p.value, digits = 2)
 @
 \caption{Testing normality of $Y_{ijk}$}
 \label{fig:normality}
 \end{figure}
 
+Another requirement for this ANOVA analysis is the normality assumption that
+states $Y \sim N(0, \sigma^2)$. We may qualify the data's normality with a
+Shapiro-Wilk normality test. See Figure \ref{fig:normality}. The Shapiro-Wilk
+normality test has a $p$ value of \Sexpr{values[['normality']]}, which means
+that the data is likely to be normal.
+
 \begin{figure}[p]
 <<echo=FALSE>>=
-  bartlett.test(time ~ size * distance, data = fitts)
+  fitts.homogeneous <- bartlett.test(time ~ size * distance, data = fitts)
+  fitts.homogeneous
+  values[['homogeneous']] <- round(fitts.homogeneous$p.value, digits = 2)
 @
 \caption{Testing homogeneity of variance of each factor}
 \label{fig:homogeneity}
 \end{figure}
 
+Likewise, we can also verify the homogeneity assumption, that $\epsilon_{ijk}
+\sim N(0, \sigma^2_\epsilon)$ with a Bartlett Test. We can see from Figure
+\ref{fig:homogeneity} that the $p$ value of the Bartlett Test is
+\Sexpr{values[['homogeneous']]}, which means that the variances are likely to
+be homogeneous (the same).
+
+\section{Results}
+
+\begin{figure}[p]
+<<echo=FALSE>>=
+  anova(fitts.lm)
+@
+\caption{ANOVA Table for $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$.}
+\label{fig:anova}
+\end{figure}
+
+Using a simple fixed effect ANOVA, we can see that the size factor
+$SS_{size}$ has a statistically significant effect on time. Surprisingly, the
+distance factor $SS_{distance}$ does not have a significant effect on time,
+despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 
 \begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
@@ -218,15 +223,14 @@ IQR.
 \label{fig:bydistance}
 \end{figure}
 
-\begin{figure}[p]
-<<echo=FALSE>>=
-  anova(fitts.lm)
-@
-\caption{ANOVA Table for $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$.}
-\label{fig:anova}
-\end{figure}
+From Figure \ref{fig:bysize}, we can see that there is some difference between each
+size's mean. However in Figure \ref{fig:bydistance}, we can see that the total times
+by distance are fairly close in means and there is much overlap between each distance's
+IQR.
 
-\bibliographystyle{ieee}
+\section{Conclusions}
+
+\bibliographystyle{acm}
 \bibliography{citations}
 
 \end{document}
