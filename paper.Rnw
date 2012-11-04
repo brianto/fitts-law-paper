@@ -1,8 +1,12 @@
 \documentclass{article}
 
 \usepackage[noae]{Sweave}
+\usepackage{amsmath}
+\usepackage[nomarkers]{endfloat}
 \usepackage{cite}
 \usepackage{hyperref}
+
+\renewcommand{\efloatseparator}{\mbox{}}
 
 \title{Examining Fitt's Law}
 \author{Brian To}
@@ -14,6 +18,7 @@
 <<echo=FALSE>>=
 library(plyr)
 library(lmtest)
+library(xtable)
 
 if (!exists('fitts')) { # Lazily fetch data
   fitts <- read.csv('http://fitts-law-experiment.herokuapp.com/data.csv')
@@ -29,6 +34,11 @@ fitts <- ddply(fitts, .(subject), .fun = function(df) {
   if (normal$p.value < 0.05) {
     return(NULL)
   }
+
+# Use the non-derp-residual data set
+#   if (df[1, 'subject'] > 9) {
+#     return(NULL)
+#   }
   
   return(df)
 })
@@ -91,7 +101,7 @@ perform. To mitigate confounding effects from order, the queue of transitions
 is shuffled. Each succeeding transition is taken from the top of the queue.
 
 Whenever a participant mis-clicks on a target (clicks on the white space around
-the target rather than the target itsef) which is considered a ``bad'' click,
+the target rather than the target itself) which is considered a ``bad'' click,
 the current transition's time is not recorded and a randomly generated
 transition not from the queue is presented to the subject. The transition after
 the new random transition, if the click is on the target (a ``good'' click),
@@ -129,6 +139,13 @@ are both fixed effects. The assumptions for this model are that:
   \item $\epsilon_{ijk} \sim N(0, \sigma^2_\epsilon)$
   \item $\sum \alpha_i = 0$
   \item $\sum \beta_j = 0$
+\end{itemize}
+
+The hypotheses for this model are that:
+
+\begin{itemize}
+  \item $H_0: \forall i \in \{ \text{small}, \text{medium}, \text{large} \}, \alpha_i = 0$
+  \item $H_0: \forall j \in \{ \text{short}, \text{long}, \text{diagonal} \}, \beta_j = 0$
 \end{itemize}
 
 \begin{figure}[p]
@@ -195,19 +212,6 @@ be homogeneous (the same).
 \section{Results}
 
 \begin{figure}[p]
-<<echo=FALSE>>=
-  anova(fitts.lm)
-@
-\caption{ANOVA Table for $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$.}
-\label{fig:anova}
-\end{figure}
-
-Using a simple fixed effect ANOVA, we can see that the size factor
-$SS_{size}$ has a statistically significant effect on time. Surprisingly, the
-distance factor $SS_{distance}$ does not have a significant effect on time,
-despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
-
-\begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
   boxplot(time ~ size, data = fitts)
 @
@@ -223,12 +227,55 @@ despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
 \label{fig:bydistance}
 \end{figure}
 
-From Figure \ref{fig:bysize}, we can see that there is some difference between each
-size's mean. However in Figure \ref{fig:bydistance}, we can see that the total times
-by distance are fairly close in means and there is much overlap between each distance's
-IQR.
+From Figure \ref{fig:bysize}, we can see that there is some difference between
+each size's mean. However in Figure \ref{fig:bydistance}, we can see that the
+total times by distance are fairly close in means and there is much overlap
+between each distance's IQR.
 
-\section{Conclusions}
+\begin{figure}[p]
+<<echo=FALSE>>=
+  anova(fitts.lm)
+@
+\caption{ANOVA Table for $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$.}
+\label{fig:anova}
+\end{figure}
+
+Using a simple fixed effect ANOVA, we can see that the size factor
+$SS_{size}$ has a statistically significant effect on time. Surprisingly, the
+distance factor $SS_{distance}$ does not have a significant effect on time,
+despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
+
+This result indicates that we should reject the null hypothesis
+$H_0: \alpha_i = 0$ that size does not affect the time-to-click. Likewise, we
+should not reject the null hypothesis $H_0: \beta_j = 0$ that distance does not
+affect the time-to-click.
+
+\section{Conclusion}
+
+While Fitt's Law states that both size and distance impact the time-to-click,
+only size was shown to be significant in this trial. A potential explanation
+for this result is that the size effect was small enough not to be detected
+by this test. Roughly, the ratio of the largest and smallest target is 16:1
+while the ratio of the longest and shortest distance is about 3.2:1.
+
+The implications of this finding is that to make it easier for users to click
+on a target, the overall size of the target should be made larger. Moreover,
+frequently used buttons or targets on a screen should be made larger than
+the less frequently used targets. Distance to the target, however, is not
+an important factor.
+
+<<results=tex,echo=FALSE>>=
+  for (id in unique(fitts$subject)) {
+    df <- subset(fitts, subject == id)
+    
+    print(xtable(df,
+      caption = paste("Experiment Data for subject", id),
+      label = "fig:data",
+      table.placement = "p"))
+  }
+@
+
+\appendix
 
 \bibliographystyle{acm}
 \bibliography{citations}

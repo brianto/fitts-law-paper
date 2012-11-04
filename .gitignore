@@ -6,3 +6,7 @@ paper*.pdf
 paper*.log
 paper*.tex
 paper*.bbl
+paper*.fff
+paper*.lof
+paper*.lot
+paper*.ttt
