@@ -1,0 +1,17 @@
+\documentclass{beamer}
+
+\title{Examining Fitt's Law}
+\subtitle{Design of Experiments}
+\author{Brian To}
+
+\usetheme{Rochester}
+\usecolortheme{orchid}
+
+\begin{document}
+  \titlepage
+  
+\begin{frame}{Introduction}
+  lorem ipsum
+\end{frame}
+
+\end{document}

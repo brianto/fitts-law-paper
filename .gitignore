@@ -10,3 +10,10 @@ paper*.fff
 paper*.lof
 paper*.lot
 paper*.ttt
+
+presentation*.log
+presentation*.nav
+presentation*.pdf
+presentation*.snm
+presentation*.tex
+presentation*.toc
