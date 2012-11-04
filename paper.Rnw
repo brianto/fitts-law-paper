@@ -1,8 +1,10 @@
 \documentclass{article}
 
 \usepackage[noae]{Sweave}
+\usepackage{cite}
+\usepackage{hyperref}
 
-\title{Examinig Fitt's Law}
+\title{Examining Fitt's Law}
 \author{Brian To}
 \date{Fall 2012}
 
@@ -42,7 +44,7 @@ that the time it takes for a user with a pointing device such as a mouse to
 click a target is a function of the distance between the pointer and the target
 and the size of the target itself. The longer the distance between the pointer
 and target, the longer the user will take to arrive at the target. Likewise,
-the smaller the target's area, the logner the user will take to arrive at the
+the smaller the target's area, the longer the user will take to arrive at the
 target area. The assumptions for this law are that: the user intends to
 \emph{rapidly} move to the target and the targets are not located at the
 screen's corners, given that the screen shows the target.
@@ -61,9 +63,53 @@ contribute to the time it takes for a user to reach (click on) a target.
 
 \section{Data Collection}
 
-% TODO
+To examine Fitt's Law, I created a web application similar to a Java applet
+created by researchers at UC Berkley\cite{applet}. The web app may be found at
+\url{http://fitts-law-experiment.herokuapp.com} and the source code may be
+found at \url{http://github.com/brianto/fitts-law-experiment}.
 
-\section{Experiment Design}
+The subject is presented a round target placed randomly in one of four possible
+locations on the screen. The locations are at the four corners of an imaginary
+rectangle. After each successful click of the target, a new target
+is shown in one of the other three remaining locations. This series of target
+clicking continues for 27 ``good'' clicks.
+
+The size factor has three levels: small, medium, and large which correspond to
+the three possible sizes of the circle target: 8, 16, and 32 pixel radii.
+Likewise, the distance factor has three levels that correspond to the three
+possible transitions along the imaginary rectangle: along the short, long,
+and diagonal edges.
+
+To ensure a balanced design, each transition to the next target is drawn from a
+queue of every possible size and distance pair. To create the variation
+necessary to perform ANOVA, each size and distance pair is repeated three times
+in the queue. Since there are 3 possible sizes and distances and 3 repetitions
+of each size-distance pair, there is a total of 27 transitions the user must
+perform. To mitigate confounding effects from order, the queue of transitions
+is shuffled. Each succeeding transition is taken from the top of the queue.
+
+Whenever a participant mis-clicks on a target (clicks on the white space around
+the target rather than the target itsef) which is considered a ``bad'' click,
+the current transition's time is not recorded and a randomly generated
+transition not from the queue is presented to the subject. The transition after
+the new random transition, if the click is on the target (a ``good'' click),
+that click will be registered.
+
+The participants are students randomly solicited from the Golisano College of
+Computing and Information Sciences. Participants either used his or her own
+computer and visited the online application, or was provided a lab computer
+to perform the experiment.
+
+Originally, this study would have included a third factor, pointer type, but
+due to the difficulty of accurately touching targets on tablet devices, the
+data for touch devices is not used in the data analysis. The data for different
+pointer types (mouse, trackpad, and tablet) are not differentiated.
+
+Moreover, the timing data of certain participants did not follow a normal
+distribution, especially the time-to-click for small targets. In these cases,
+the participants' data is excluded from the analysis to preserve the normality
+assumption. Out of 11 total participants, only 4 participants' timing data are
+normal.
 
 \section{Experiment Analysis}
 
@@ -86,9 +132,9 @@ are both fixed effects. The assumptions for this model are that:
 To verify the independence assumption, we can plot the time data residuals
 $Y_{ijk} - \bar Y$ against the order of the data. Using this method, we
 can see that the residuals do not exhibit any pattern. See Figure \ref{fig:residuals}.
-Likewise, a Durbin-Watson autocorrelation test against the data order results in
+Likewise, a Durbin-Watson auto-correlation test against the data order results in
 a $p$ value of 0.3103, which means the residuals have no significant
-autocorrelation. See Figure \ref{fig:independence}.
+auto correlation. See Figure \ref{fig:independence}.
 
 Another requirement for this ANOVA analysis is the normality assumption that
 states $Y \sim N(0, \sigma^2)$. We may qualify the data's normality with a
@@ -135,7 +181,7 @@ IQR.
 <<echo=FALSE>>=
   dwtest(fitts$time ~ as.numeric(row.names(fitts)))
 @
-\caption{Testing independence of $Y_{ijk}$ via autocorrelation}
+\caption{Testing independence of $Y_{ijk}$ via auto correlation}
 \label{fig:independence}
 \end{figure}
 
@@ -169,7 +215,7 @@ IQR.
   boxplot(time ~ distance, data = fitts)
 @
 \caption{Times by Distance}
-\label{fig:bysize}
+\label{fig:bydistance}
 \end{figure}
 
 \begin{figure}[p]
@@ -179,5 +225,8 @@ IQR.
 \caption{ANOVA Table for $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$.}
 \label{fig:anova}
 \end{figure}
+
+\bibliographystyle{ieee}
+\bibliography{citations}
 
 \end{document}

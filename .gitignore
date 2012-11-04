@@ -1,8 +1,8 @@
 .Rproj.user
 .Rhistory
 .RData
-
 paper-fig
 paper*.pdf
 paper*.log
 paper*.tex
+paper*.bbl
