@@ -37,7 +37,31 @@ fitts.lm <- lm(time ~ size * distance, fitts)
 
 \section{Introduction}
 
+In the realm of human-computer interaction and usability, Fitt's Law states
+that the time it takes for a user with a pointing device such as a mouse to
+click a target is a function of the distance between the pointer and the target
+and the size of the target itself. The longer the distance between the pointer
+and target, the longer the user will take to arrive at the target. Likewise,
+the smaller the target's area, the logner the user will take to arrive at the
+target area. The assumptions for this law are that: the user intends to
+\emph{rapidly} move to the target and the targets are not located at the
+screen's corners, given that the screen shows the target.
+
+Current dynamic websites make use of this law to attract new users, and to
+provide a more enjoyable experience for regular users. For example, the Windows
+8 Metro UI reforms applications as square tiles rather than retaining the icons
+from the older Windows interface. The larger tiles in the Metro UI are
+therefore much easier to select than the icons. Similarly, right-clicking on
+Windows opens a menu whose closest corner is directly underneath the user's
+cursor. Since the items are closest to the user's pointer, it is much easier
+for the user to click on the item.
+
+The objective of this experiment is to verify that both distance and time
+contribute to the time it takes for a user to reach (click on) a target.
+
 \section{Data Collection}
+
+% TODO
 
 \section{Experiment Design}
 
