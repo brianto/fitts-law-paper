@@ -13,6 +13,7 @@
 \date{Fall 2012}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
   \maketitle
   
 <<echo=FALSE>>=
@@ -21,7 +22,11 @@ library(lmtest)
 library(xtable)
 
 if (!exists('fitts')) { # Lazily fetch data
-  fitts <- read.csv('http://fitts-law-experiment.herokuapp.com/data.csv')
+  if (file.exists('data.csv')) {
+    fitts <- read.csv('data.csv')
+  } else {
+    fitts <- read.csv('http://fitts-law-experiment.herokuapp.com/data.csv')
+  }
 }
 
 # Clean tablet data
