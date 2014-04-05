@@ -10,7 +10,7 @@
 
 \title{Examining Fitt's Law}
 \author{Brian To}
-\date{Fall 2012}
+\date{Fall 2012, Revised Spring 2014}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
@@ -32,6 +32,16 @@ if (!exists('fitts')) { # Lazily fetch data
 
 # Clean tablet data
 fitts <- subset(fitts, pointer != 'tablet')
+
+fitts.normsubject.values <- as.numeric(daply(fitts, .(subject), function(df) {
+  df.test <- shapiro.test(df$time)
+  
+  return(df.test$p.value)
+}))
+
+fitts.normsubject <- data.frame(
+  subject = 1:length(fitts.normsubject.values),
+  p.value = fitts.normsubject.values)
 
 # Get only the normal data
 fitts <- ddply(fitts, .(subject), .fun = function(df) {
@@ -141,7 +151,14 @@ Moreover, the timing data of certain participants did not follow a normal
 distribution, especially the time-to-click for small targets. In these cases,
 the participants' data is excluded from the analysis to preserve the normality
 assumption. Out of 11 total participants, only 3 participants' timing data are
-normal via the Shapiro-Wilk test for normality.
+normal via the Shapiro-Wilk test for normality\ref{fig:normsubject}.
+
+<<results=tex,echo=FALSE>>=
+  print(xtable(fitts.normsubject,
+    caption = "Testing normality of times by subject",
+    label = "fig:normsubject",
+    table.placement = "p"))
+@
 
 \section{Experiment Analysis}
 
@@ -149,9 +166,10 @@ An initial model for this relation is
 
 \[ Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk} \]
 
-where $\alpha$ represents the effect of size, $\beta$ represents the effect of
-distance, and $\epsilon$ represents the error in the model. $\alpha$ and $\beta$
-are both fixed effects. The assumptions for this model are that:
+where $Y$ represents the time needed to click a dot, $\alpha$ represents the
+effect of size, $\beta$ represents the effect of distance, and $\epsilon$
+represents the error in the model. $\alpha$ and $\beta$ are both fixed effects.
+The assumptions for this model are that:
 
 \begin{itemize}
   \item entries are independent
@@ -191,12 +209,12 @@ The hypotheses for this model are that:
 \end{figure}
 
 To verify the independence assumption, we can plot the time data residuals
-$Y_{ijk} - \bar Y$ against the order of the data. Using this method, we
-can see that the residuals do not exhibit any pattern. See Figure
-\ref{fig:residuals}. Likewise, a Durbin-Watson auto-correlation test against
-the data order results in a $p$ value of \Sexpr{values[['independence']]},
-which means the residuals have no significant auto correlation. See Figure
-\ref{fig:independence}.
+$Y_{ijk} - \bar Y$ against the order of the data\ref{fig:residuals}. The
+residuals graph shows no time pattern or trend within each subject, so we
+may say that $Y_{ijk}$ is independent. Likewise, a Durbin-Watson
+auto-correlation test against the data order results in a $p$ value of
+\Sexpr{values[['independence']]}, which means the residuals are unlikely to
+have significant auto correlation\ref{fig:independence}.
 
 \begin{figure}[p]
 <<echo=FALSE>>=
@@ -208,11 +226,11 @@ which means the residuals have no significant auto correlation. See Figure
 \label{fig:normality}
 \end{figure}
 
-Another requirement for this ANOVA analysis is the normality assumption that
-states $Y \sim N(0, \sigma^2)$. We may qualify the data's normality with a
-Shapiro-Wilk normality test. See Figure \ref{fig:normality}. The Shapiro-Wilk
-normality test has a $p$ value of \Sexpr{values[['normality']]}, which means
-that the data is likely to be normal.
+Another requirement for this ANOVA analysis is that $Y \sim N(0, \sigma^2)$,
+or $Y$ is normally distributed. We may qualify the data's normality with a
+Shapiro-Wilk normality test\ref{fig:normality}. The Shapiro-Wilk normality
+test has a $p$ value of \Sexpr{values[['normality']]}, which suggests that
+the data is likely to be normal.
 
 \begin{figure}[p]
 <<echo=FALSE>>=
@@ -227,8 +245,8 @@ that the data is likely to be normal.
 Likewise, we can also verify the homogeneity assumption, that $\epsilon_{ijk}
 \sim N(0, \sigma^2_\epsilon)$ with a Bartlett Test. We can see from Figure
 \ref{fig:homogeneity} that the $p$ value of the Bartlett Test is
-\Sexpr{values[['homogeneous']]}, which means that the variances are likely to
-be homogeneous (the same).
+\Sexpr{values[['homogeneous']]}, which suggests that the variances are likely
+to be homogeneous (the same).
 
 \section{Results}
 
@@ -255,7 +273,8 @@ be homogeneous (the same).
 From Figure \ref{fig:bysize}, we can see that there is some difference between
 each size's mean. However in Figure \ref{fig:bydistance}, we can see that the
 total times by distance are fairly close in means and there is much overlap
-between each distance's IQR.
+between each distance's IQR. This result suggests that size may have a large
+impact on click times, but not distance.
 
 \begin{figure}[p]
 <<echo=FALSE>>=
@@ -268,12 +287,29 @@ between each distance's IQR.
 Using a simple fixed effect ANOVA, we can see that the size factor
 $SS_{size}$ has a statistically significant effect on time. Surprisingly, the
 distance factor $SS_{distance}$ does not have a significant effect on time,
-despite its inclusion in Fitt's Law. See Figure \ref{fig:anova}
+despite its inclusion in Fitt's Law\ref{fig:anova}
 
 This result indicates that we should reject the null hypothesis
 $H_0: \alpha_i = 0$ that size does not affect the time-to-click. Likewise, we
 should not reject the null hypothesis $H_0: \beta_j = 0$ that distance does not
-affect the time-to-click.
+affect the time-to-click. This confirms the suggestion that size plays a
+significant role in the initial model, but distance does not.
+
+Our revised model is now
+
+\[ Y_{ij} = \mu + \alpha_i + \epsilon_{ij} \]
+
+\begin{figure}[p]
+<<echo=FALSE>>=
+  anova(lm(time ~ size, data = fitts))
+@
+\caption{ANOVA Table for $Y_{ij} = \mu + \alpha_i + \epsilon_{ij}$.}
+\label{fig:modified}
+\end{figure}
+
+where $\alpha$ represents the effect of size on $Y$. An ANOVA analysis on this
+modified model reconfirms that size has a significant impact on
+distance\ref{fig:modified}.
 
 \section{Conclusion}
 
