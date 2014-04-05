@@ -326,14 +326,15 @@ the less frequently used targets. Distance to the target, however, is not
 an important factor.
 
 <<results=tex,echo=FALSE>>=
-  for (id in unique(fitts$subject)) {
-    df <- subset(fitts, subject == id)
+  d_ply(fitts, .(subject), function(df) {
+    subject <- df$subject[1]
+    df.simple <- df[!names(df) %in% c('subject')]
     
-    print(xtable(df,
-      caption = paste("Experiment Data for subject", id),
+    print(xtable(df.simple,
+      caption = paste("Experiment Data for subject", subject),
       label = "fig:data",
       table.placement = "p"))
-  }
+  })
 @
 
 \appendix
