@@ -86,16 +86,16 @@ contribute to the time it takes for a user to reach (click on) a target.
 
 \section{Data Collection}
 
-To examine Fitt's Law, I created a web application similar to a Java applet
-created by researchers at UC Berkley\cite{applet}\cite{goldberg}. The web app
-may be found at \url{http://fitts-law-experiment.herokuapp.com} and the source
-code may be found at \url{http://github.com/brianto/fitts-law-experiment}.
+To examine Fitt's Law, a web application similar to a Java applet created by
+researchers at UC Berkley\cite{applet}\cite{goldberg} is used to collect click
+time data. The web app may be found at
+\url{http://fitts-law-experiment.herokuapp.com} and the source code may be
+found at \url{http://github.com/brianto/fitts-law-experiment}.
 
 The subject is presented a round target placed randomly in one of four possible
-locations on the screen. The locations are at the four corners of an imaginary
-rectangle. After each successful click of the target, a new target
-is shown in one of the other three remaining locations. This series of target
-clicking continues for 27 ``good'' clicks.
+locations on the screen. The locations are arranged as the four corners of a
+rectangle. After each successful click of the target, a new target is shown
+in one of the other three remaining locations.
 
 The size factor has three levels: small, medium, and large which correspond to
 the three possible sizes of the circle target: 8, 16, and 32 pixel radii.
@@ -111,12 +111,13 @@ of each size-distance pair, there is a total of 27 transitions the user must
 perform. To mitigate confounding effects from order, the queue of transitions
 is shuffled. Each succeeding transition is taken from the top of the queue.
 
-Whenever a participant mis-clicks on a target (clicks on the white space around
-the target rather than the target itself) which is considered a ``bad'' click,
-the current transition's time is not recorded and a randomly generated
-transition not from the queue is presented to the subject. The transition after
-the new random transition, if the click is on the target (a ``good'' click),
-that click will be registered.
+Whenever a participant mis-clicks on a target and clicks on the white space
+around the target rather than the target itself, is considered a ``bad'' click.
+The current transition's time is not recorded and a randomly generated
+transition not from the queue is presented to the subject. This is to reduce any
+confounding effects from the bad click on the subsequent clicks. The original
+transition which was subject to the bad click is the next transition after the
+random transition.
 
 The participants are students randomly solicited from the Golisano College of
 Computing and Information Sciences. Participants either used his or her own
@@ -125,14 +126,22 @@ to perform the experiment.
 
 Originally, this study would have included a third factor, pointer type, but
 due to the difficulty of accurately touching targets on tablet devices, the
-data for touch devices is not used in the data analysis. The data for different
-pointer types (mouse, trackpad, and tablet) are not differentiated.
+data for touch devices is not used in the data analysis. Rather than using one
+finger and tapping the dot, subjects would hold their tables and use their
+thumbs to tap each dot. Since the experiment assumes a pointing device moving
+within the corners of the rectangle and not ouside of it, the distance
+measurement becomes meaningless. Also, tapping the dot is difficult on a tablet
+because the typical resolution is fairly high compared to computer displays at
+the time and the true size of the dot depended on how ``large'' a pixel is on
+the device. The effect is that dots become much smaller on mobile devices and
+that there were many more mis-clicks. The pointer type is still tracked, but
+is not used in the data analysis.
 
 Moreover, the timing data of certain participants did not follow a normal
 distribution, especially the time-to-click for small targets. In these cases,
 the participants' data is excluded from the analysis to preserve the normality
-assumption. Out of 11 total participants, only 4 participants' timing data are
-normal.
+assumption. Out of 11 total participants, only 3 participants' timing data are
+normal via the Shapiro-Wilk test for normality.
 
 \section{Experiment Analysis}
 
