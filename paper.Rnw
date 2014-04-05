@@ -17,6 +17,7 @@
   \maketitle
   
 <<echo=FALSE>>=
+library(ggplot2)
 library(plyr)
 library(lmtest)
 library(xtable)
@@ -40,15 +41,20 @@ fitts <- ddply(fitts, .(subject), .fun = function(df) {
     return(NULL)
   }
 
-# Use the non-derp-residual data set
-#   if (df[1, 'subject'] > 9) {
-#     return(NULL)
-#   }
+  # Use the non-derp-residual data set
+  if (df[1, 'subject'] > 9) {
+    return(NULL)
+  }
   
   return(df)
 })
 
-fitts.resid <- resid(lm(fitts$time ~ as.numeric(row.names(fitts))))
+fitts.resid.values <- as.numeric(resid(lm(fitts$time ~ as.numeric(row.names(fitts)))))
+fitts.resid <- data.frame(
+  id = 1:length(fitts.resid.values),
+  subject = fitts$subject,
+  residual = fitts.resid.values)
+
 fitts.lm <- lm(time ~ size * distance, fitts)
 
 values <- list()
@@ -155,10 +161,11 @@ The hypotheses for this model are that:
 
 \begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
-  plot(fitts.resid,
-       main="Time residuals",
-       xlab="Index",
-       ylab="Residual")
+  ggplot(fitts.resid) +
+    ggtitle("Time Residuals") +
+    xlab("Index") +
+    ylab("Residual") +
+    geom_point(aes(x = id, y = residual, colour = factor(subject)))
 @
 \caption{Time factor residuals}
 \label{fig:residuals}
@@ -218,7 +225,9 @@ be homogeneous (the same).
 
 \begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
-  boxplot(time ~ size, data = fitts)
+  ggplot(fitts) +
+    geom_boxplot(aes(x = size, y = time)) +
+    coord_flip()
 @
 \caption{Times by Size}
 \label{fig:bysize}
@@ -226,7 +235,9 @@ be homogeneous (the same).
 
 \begin{figure}[p]
 <<fig=TRUE,echo=FALSE,width=8,height=4>>=
-  boxplot(time ~ distance, data = fitts)
+  ggplot(fitts) +
+    geom_boxplot(aes(x = distance, y = time)) +
+    coord_flip()
 @
 \caption{Times by Distance}
 \label{fig:bydistance}
