@@ -23,7 +23,7 @@ library(xtable)
 
 if (!exists('fitts')) { # Lazily fetch data
   if (file.exists('data.csv')) {
-    fitts <- read.csv('data.csv')
+    fitts <- read.csv('data.csv', header = TRUE)
   } else {
     fitts <- read.csv('http://fitts-law-experiment.herokuapp.com/data.csv')
   }
