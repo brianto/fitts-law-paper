@@ -151,7 +151,7 @@ Moreover, the timing data of certain participants did not follow a normal
 distribution, especially the time-to-click for small targets. In these cases,
 the participants' data is excluded from the analysis to preserve the normality
 assumption. Out of 11 total participants, only 3 participants' timing data are
-normal via the Shapiro-Wilk test for normality\ref{fig:normsubject}.
+normal via the Shapiro-Wilk test for normality. See figure \ref{fig:normsubject}.
 
 <<results=tex,echo=FALSE>>=
   print(xtable(fitts.normsubject,
@@ -164,10 +164,11 @@ normal via the Shapiro-Wilk test for normality\ref{fig:normsubject}.
 
 An initial model for this relation is
 
-\[ Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk} \]
+\[ Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} \epsilon_{ijk} \]
 
 where $Y$ represents the time needed to click a dot, $\alpha$ represents the
-effect of size, $\beta$ represents the effect of distance, and $\epsilon$
+effect of size, $\beta$ represents the effect of distance, $\alpha\beta$ represents
+the interaction effect between size and distance, and $\epsilon$
 represents the error in the model. $\alpha$ and $\beta$ are both fixed effects.
 The assumptions for this model are that:
 
@@ -209,12 +210,12 @@ The hypotheses for this model are that:
 \end{figure}
 
 To verify the independence assumption, we can plot the time data residuals
-$Y_{ijk} - \bar Y$ against the order of the data\ref{fig:residuals}. The
+$Y_{ijk} - \bar Y$ against the order of the data. See figure \ref{fig:residuals}. The
 residuals graph shows no time pattern or trend within each subject, so we
 may say that $Y_{ijk}$ is independent. Likewise, a Durbin-Watson
 auto-correlation test against the data order results in a $p$ value of
 \Sexpr{values[['independence']]}, which means the residuals are unlikely to
-have significant auto correlation\ref{fig:independence}.
+have significant auto correlation. See figure \ref{fig:independence}.
 
 \begin{figure}[p]
 <<echo=FALSE>>=
@@ -228,7 +229,7 @@ have significant auto correlation\ref{fig:independence}.
 
 Another requirement for this ANOVA analysis is that $Y \sim N(0, \sigma^2)$,
 or $Y$ is normally distributed. We may qualify the data's normality with a
-Shapiro-Wilk normality test\ref{fig:normality}. The Shapiro-Wilk normality
+Shapiro-Wilk normality test. See figure \ref{fig:normality}. The Shapiro-Wilk normality
 test has a $p$ value of \Sexpr{values[['normality']]}, which suggests that
 the data is likely to be normal.
 
@@ -287,7 +288,7 @@ impact on click times, but not distance.
 Using a simple fixed effect ANOVA, we can see that the size factor
 $SS_{size}$ has a statistically significant effect on time. Surprisingly, the
 distance factor $SS_{distance}$ does not have a significant effect on time,
-despite its inclusion in Fitt's Law\ref{fig:anova}
+despite its inclusion in Fitt's Law. See figure \ref{fig:anova}
 
 This result indicates that we should reject the null hypothesis
 $H_0: \alpha_i = 0$ that size does not affect the time-to-click. Likewise, we
@@ -309,7 +310,7 @@ Our revised model is now
 
 where $\alpha$ represents the effect of size on $Y$. An ANOVA analysis on this
 modified model reconfirms that size has a significant impact on
-distance\ref{fig:modified}.
+distance. See figure \ref{fig:modified}.
 
 \section{Conclusion}
 
