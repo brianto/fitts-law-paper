@@ -17,3 +17,4 @@ presentation*.snm
 presentation*.tex
 presentation*.toc
 paper.synctex.gz
+paper.aux

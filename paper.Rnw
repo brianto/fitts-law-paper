@@ -164,7 +164,7 @@ normal via the Shapiro-Wilk test for normality. See figure \ref{fig:normsubject}
 
 An initial model for this relation is
 
-\[ Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} \epsilon_{ijk} \]
+\[ Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \epsilon_{ijk} \]
 
 where $Y$ represents the time needed to click a dot, $\alpha$ represents the
 effect of size, $\beta$ represents the effect of distance, $\alpha\beta$ represents
@@ -173,11 +173,12 @@ represents the error in the model. $\alpha$ and $\beta$ are both fixed effects.
 The assumptions for this model are that:
 
 \begin{itemize}
-  \item entries are independent
-  \item $Y \sim N(0, \sigma^2)$
-  \item $\epsilon_{ijk} \sim N(0, \sigma^2_\epsilon)$
+  \item $Y \sim N(0, \sigma^2)$ and independent
+  \item $\epsilon_{ijk} \sim N(0, \sigma^2_\epsilon)$ and independent
   \item $\sum \alpha_i = 0$
   \item $\sum \beta_j = 0$
+  \item $\sum_i (\alpha \beta)_{ij} = 0, \forall j$ or the sum of the interaction terms by $j$ are 0
+  \item $\sum_j (\alpha \beta)_{ij} = 0, \forall i$ or the sum of the interaction terms by $i$ are 0
 \end{itemize}
 
 The hypotheses for this model are that:
@@ -210,7 +211,7 @@ The hypotheses for this model are that:
 \end{figure}
 
 To verify the independence assumption, we can plot the time data residuals
-$Y_{ijk} - \bar Y$ against the order of the data. See figure \ref{fig:residuals}. The
+$Y_{ijk} - \bar Y_{ij}$ against the order of the data. See figure \ref{fig:residuals}. The
 residuals graph shows no time pattern or trend within each subject, so we
 may say that $Y_{ijk}$ is independent. Likewise, a Durbin-Watson
 auto-correlation test against the data order results in a $p$ value of
