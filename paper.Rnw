@@ -289,7 +289,7 @@ impact on click times, but not distance.
 Using a simple fixed effect ANOVA, we can see that the size factor
 $SS_{size}$ has a statistically significant effect on time. Surprisingly, the
 distance factor $SS_{distance}$ does not have a significant effect on time,
-despite its inclusion in Fitt's Law. See figure \ref{fig:anova}
+despite its inclusion in Fitt's Law. See figure \ref{fig:anova}.
 
 This result indicates that we should reject the null hypothesis
 $H_0: \alpha_i = 0$ that size does not affect the time-to-click. Likewise, we
